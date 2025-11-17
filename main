@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decentralized Appointment Scheduler</title>
+    <style>
+        :root {
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-family-mono: 'Monaco', 'Courier New', monospace;
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+                --color-bg-1: rgba(29, 78, 216, 0.15);
+                --color-bg-2: rgba(180, 83, 9, 0.15);
+                --color-bg-3: rgba(21, 128, 61, 0.15);
+                --color-bg-4: rgba(185, 28, 28, 0.15);
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+                --color-warning: var(--color-orange-400);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: var(--space-20);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--color-surface);
+            padding: var(--space-24);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-card-border);
+            margin-bottom: var(--space-24);
+            box-shadow: var(--shadow-sm);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--space-16);
+            flex-wrap: wrap;
+            margin-top: var(--space-16);
+        }
+
+        .status-badge {
+            padding: var(--space-8) var(--space-16);
+            border-radius: var(--radius-base);
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+
+        .status-badge.connected {
+            background: rgba(var(--color-teal-500-rgb), 0.15);
+            color: var(--color-success);
+            border: 1px solid rgba(var(--color-teal-500-rgb), 0.25);
+        }
+
+        .status-badge.disconnected {
+            background: rgba(192, 21, 47, 0.15);
+            color: var(--color-error);
+            border: 1px solid rgba(192, 21, 47, 0.25);
+        }
+
+        .status-badge.info {
+            background: var(--color-bg-1);
+            color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--space-8);
+            margin-bottom: var(--space-24);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .tab {
+            padding: var(--space-12) var(--space-20);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--color-text);
+        }
+
+        .tab.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            margin-bottom: var(--space-20);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: var(--space-16);
+            color: var(--color-text);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-16);
+        }
+
+        label {
+            display: block;
+            margin-bottom: var(--space-8);
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--color-text);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            background: var(--color-background);
+            color: var(--color-text);
+            font-family: var(--font-family-base);
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px var(--color-focus-ring);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            padding: var(--space-12) var(--space-24);
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+            border: none;
+            border-radius: var(--radius-base);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-family-base);
+        }
+
+        button:hover {
+            background: var(--color-primary-hover);
+        }
+
+        button:active {
+            background: var(--color-primary-active);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: var(--color-secondary);
+            color: var(--color-text);
+        }
+
+        button.secondary:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        button.danger {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .appointment-list {
+            display: grid;
+            gap: var(--space-16);
+        }
+
+        .appointment-item {
+            background: var(--color-background);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-16);
+            transition: all 0.2s;
+        }
+
+        .appointment-item:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--space-12);
+        }
+
+        .appointment-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--color-text);
+        }
+
+        .appointment-status {
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .appointment-status.pending {
+            background: var(--color-bg-2);
+            color: var(--color-warning);
+        }
+
+        .appointment-status.confirmed {
+            background: rgba(var(--color-teal-500-rgb), 0.15);
+            color: var(--color-success);
+        }
+
+        .appointment-status.cancelled {
+            background: rgba(192, 21, 47, 0.15);
+            color: var(--color-error);
+        }
+
+        .appointment-status.completed {
+            background: var(--color-bg-3);
+            color: var(--color-success);
+        }
+
+        .appointment-details {
+            display: grid;
+            gap: var(--space-8);
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-12);
+        }
+
+        .appointment-detail {
+            display: flex;
+            gap: var(--space-8);
+        }
+
+        .appointment-detail strong {
+            color: var(--color-text);
+            min-width: 100px;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: var(--space-8);
+            flex-wrap: wrap;
+        }
+
+        .appointment-actions button {
+            padding: var(--space-8) var(--space-16);
+            font-size: 13px;
+        }
+
+        .blockchain-info {
+            background: var(--color-bg-1);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-12);
+            font-family: var(--font-family-mono);
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            word-break: break-all;
+            margin-top: var(--space-12);
+        }
+
+        .blockchain-info strong {
+            color: var(--color-text);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-16);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-16);
+            margin-bottom: var(--space-24);
+        }
+
+        .stat-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-16);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-32);
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-16);
+            opacity: 0.5;
+        }
+
+        .provider-card {
+            background: var(--color-background);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: var(--space-16);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .provider-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-primary);
+        }
+
+        .provider-card.selected {
+            border-color: var(--color-primary);
+            background: rgba(var(--color-teal-500-rgb), 0.05);
+        }
+
+        .provider-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: var(--space-8);
+        }
+
+        .provider-specialty {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin-bottom: var(--space-8);
+        }
+
+        .provider-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            font-size: 14px;
+        }
+
+        .alert {
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            margin-bottom: var(--space-16);
+            font-size: 14px;
+        }
+
+        .alert.success {
+            background: rgba(var(--color-teal-500-rgb), 0.15);
+            color: var(--color-success);
+            border: 1px solid rgba(var(--color-teal-500-rgb), 0.25);
+        }
+
+        .alert.error {
+            background: rgba(192, 21, 47, 0.15);
+            color: var(--color-error);
+            border: 1px solid rgba(192, 21, 47, 0.25);
+        }
+
+        .alert.info {
+            background: var(--color-bg-1);
+            color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--color-border);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: var(--space-20);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-24);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-16);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .time-slot {
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .time-slot:hover {
+            border-color: var(--color-primary);
+            background: rgba(var(--color-teal-500-rgb), 0.05);
+        }
+
+        .time-slot.selected {
+            border-color: var(--color-primary);
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .time-slot.unavailable {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: var(--space-8);
+            margin-bottom: var(--space-16);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: var(--space-12);
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .appointment-header {
+                flex-direction: column;
+                gap: var(--space-8);
+            }
+
+            .appointment-actions {
+                width: 100%;
+            }
+
+            .appointment-actions button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔗 Decentralized Appointment Scheduler</h1>
+            <p style="color: var(--color-text-secondary); margin-bottom: var(--space-16);">
+                Blockchain-powered secure appointment booking system
+            </p>
+            <div class="status-bar">
+                <div class="status-badge disconnected" id="walletStatus">
+                    <span class="status-dot"></span>
+                    <span>Wallet Not Connected</span>
+                </div>
+                <div class="status-badge info" id="networkStatus">
+                    <span>Network: Simulated</span>
+                </div>
+                <div class="status-badge info" id="blockCount">
+                    <span>Blocks: 0</span>
+                </div>
+                <button id="connectWallet" style="margin-left: auto;">Connect Wallet</button>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAppointments">0</div>
+                <div class="stat-label">Total Appointments</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="confirmedAppointments">0</div>
+                <div class="stat-label">Confirmed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pendingAppointments">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeProviders">3</div>
+                <div class="stat-label">Active Providers</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="book">Book Appointment</button>
+            <button class="tab" data-tab="myAppointments">My Appointments</button>
+            <button class="tab" data-tab="providers">Service Providers</button>
+            <button class="tab" data-tab="blockchain">Blockchain Explorer</button>
+        </div>
+
+        <div class="tab-content active" id="book">
+            <div class="card">
+                <h2>Schedule New Appointment</h2>
+                <div id="bookingAlert"></div>
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name *</label>
+                        <input type="text" id="patientName" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientEmail">Email Address *</label>
+                        <input type="email" id="patientEmail" required placeholder="your.email@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientPhone">Phone Number *</label>
+                        <input type="tel" id="patientPhone" required placeholder="+91 1234567890">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="provider">Service Provider *</label>
+                        <select id="provider" required>
+                            <option value="">Select a provider</option>
+                            <option value="dr-sharma">Dr. Priya Sharma - Cardiologist</option>
+                            <option value="dr-patel">Dr. Raj Patel - General Physician</option>
+                            <option value="dr-mehta">Dr. Anita Mehta - Dermatologist</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointmentDate">Preferred Date *</label>
+                        <input type="date" id="appointmentDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointmentTime">Preferred Time *</label>
+                        <input type="time" id="appointmentTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appointmentType">Appointment Type *</label>
+                        <select id="appointmentType" required>
+                            <option value="">Select type</option>
+                            <option value="consultation">Consultation</option>
+                            <option value="followup">Follow-up</option>
+                            <option value="emergency">Emergency</option>
+                            <option value="routine">Routine Check-up</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="symptoms">Symptoms / Reason for Visit</label>
+                        <textarea id="symptoms" placeholder="Describe your symptoms or reason for appointment"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes</label>
+                        <textarea id="notes" placeholder="Any additional information"></textarea>
+                    </div>
+
+                    <button type="submit" id="submitBooking">
+                        Create Appointment on Blockchain
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tab-content" id="myAppointments">
+            <div class="card">
+                <h2>Your Appointments</h2>
+                <div id="appointmentsList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>No appointments found. Book your first appointment to get started!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="providers">
+            <div class="card">
+                <h2>Available Service Providers</h2>
+                <div class="grid-2" id="providersList">
+                    <div class="provider-card">
+                        <div class="provider-name">Dr. Priya Sharma</div>
+                        <div class="provider-specialty">Cardiologist - Heart Specialist</div>
+                        <div class="provider-rating">⭐ 4.9 (128 reviews)</div>
+                        <div style="margin-top: var(--space-12); font-size: 13px; color: var(--color-text-secondary);">
+                            <div>Experience: 15 years</div>
+                            <div>Availability: Mon-Fri 9AM-5PM</div>
+                        </div>
+                    </div>
+                    <div class="provider-card">
+                        <div class="provider-name">Dr. Raj Patel</div>
+                        <div class="provider-specialty">General Physician</div>
+                        <div class="provider-rating">⭐ 4.8 (205 reviews)</div>
+                        <div style="margin-top: var(--space-12); font-size: 13px; color: var(--color-text-secondary);">
+                            <div>Experience: 12 years</div>
+                            <div>Availability: Mon-Sat 10AM-6PM</div>
+                        </div>
+                    </div>
+                    <div class="provider-card">
+                        <div class="provider-name">Dr. Anita Mehta</div>
+                        <div class="provider-specialty">Dermatologist - Skin Specialist</div>
+                        <div class="provider-rating">⭐ 4.9 (156 reviews)</div>
+                        <div style="margin-top: var(--space-12); font-size: 13px; color: var(--color-text-secondary);">
+                            <div>Experience: 10 years</div>
+                            <div>Availability: Tue-Sat 11AM-7PM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="blockchain">
+            <div class="card">
+                <h2>Blockchain Explorer</h2>
+                <p style="color: var(--color-text-secondary); margin-bottom: var(--space-16);">
+                    View all appointments recorded on the blockchain
+                </p>
+                <div id="blockchainData">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⛓️</div>
+                        <p>No blocks mined yet. Create an appointment to see blockchain data.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Action</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody"></div>
+            <div style="display: flex; gap: var(--space-8); margin-top: var(--space-16);">
+                <button onclick="closeModal()" class="secondary" style="flex: 1;">Cancel</button>
+                <button id="modalConfirm" style="flex: 1;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated Blockchain Implementation
+        class Block {
+            constructor(index, timestamp, data, previousHash = '') {
+                this.index = index;
+                this.timestamp = timestamp;
+                this.data = data;
+                this.previousHash = previousHash;
+                this.hash = this.calculateHash();
+                this.nonce = 0;
+            }
+
+            calculateHash() {
+                const crypto = {
+                    sha256: (str) => {
+                        let hash = 0;
+                        for (let i = 0; i < str.length; i++) {
+                            const char = str.charCodeAt(i);
+                            hash = ((hash << 5) - hash) + char;
+                            hash = hash & hash;
+                        }
+                        return Math.abs(hash).toString(16).padStart(64, '0');
+                    }
+                };
+                return crypto.sha256(
+                    this.index + 
+                    this.previousHash + 
+                    this.timestamp + 
+                    JSON.stringify(this.data) + 
+                    this.nonce
+                );
+            }
+
+            mineBlock(difficulty) {
+                while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+                    this.nonce++;
+                    this.hash = this.calculateHash();
+                }
+            }
+        }
+
+        class Blockchain {
+            constructor() {
+                this.chain = [this.createGenesisBlock()];
+                this.difficulty = 2;
+                this.pendingTransactions = [];
+            }
+
+            createGenesisBlock() {
+                return new Block(0, Date.now(), {
+                    type: "Genesis Block",
+                    message: "Decentralized Appointment System Initialized"
+                }, "0");
+            }
+
+            getLatestBlock() {
+                return this.chain[this.chain.length - 1];
+            }
+
+            addBlock(data) {
+                const block = new Block(
+                    this.chain.length,
+                    Date.now(),
+                    data,
+                    this.getLatestBlock().hash
+                );
+                block.mineBlock(this.difficulty);
+                this.chain.push(block);
+                return block;
+            }
+
+            isValid() {
+                for (let i = 1; i < this.chain.length; i++) {
+                    const currentBlock = this.chain[i];
+                    const previousBlock = this.chain[i - 1];
+
+                    if (currentBlock.hash !== currentBlock.calculateHash()) {
+                        return false;
+                    }
+
+                    if (currentBlock.previousHash !== previousBlock.hash) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+        // Application State
+        const blockchain = new Blockchain();
+        let appointments = [];
+        let isWalletConnected = false;
+        let userAddress = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAppointments();
+            updateStats();
+            setMinDate();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+
+            // Connect wallet
+            document.getElementById('connectWallet').addEventListener('click', connectWallet);
+
+            // Booking form
+            document.getElementById('bookingForm').addEventListener('submit', handleBooking);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'myAppointments') {
+                renderAppointments();
+            } else if (tabName === 'blockchain') {
+                renderBlockchain();
+            }
+        }
+
+        function connectWallet() {
+            isWalletConnected = true;
+            userAddress = '0x' + Array(40).fill(0).map(() => 
+                Math.floor(Math.random() * 16).toString(16)
+            ).join('');
+
+            document.getElementById('walletStatus').className = 'status-badge connected';
+            document.getElementById('walletStatus').innerHTML = `
+                <span class="status-dot"></span>
+                <span>Connected: ${userAddress.substring(0, 10)}...${userAddress.substring(36)}</span>
+            `;
+            document.getElementById('connectWallet').textContent = 'Disconnect';
+            document.getElementById('connectWallet').onclick = disconnectWallet;
+
+            showAlert('bookingAlert', 'Wallet connected successfully!', 'success');
+        }
+
+        function disconnectWallet() {
+            isWalletConnected = false;
+            userAddress = null;
+
+            document.getElementById('walletStatus').className = 'status-badge disconnected';
+            document.getElementById('walletStatus').innerHTML = `
+                <span class="status-dot"></span>
+                <span>Wallet Not Connected</span>
+            `;
+            document.getElementById('connectWallet').textContent = 'Connect Wallet';
+            document.getElementById('connectWallet').onclick = connectWallet;
+        }
+
+        function setMinDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+        }
+
+        async function handleBooking(e) {
+            e.preventDefault();
+
+            if (!isWalletConnected) {
+                showAlert('bookingAlert', 'Please connect your wallet first!', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBooking');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Processing...';
+
+            const formData = {
+                id: generateId(),
+                patientName: document.getElementById('patientName').value,
+                patientEmail: document.getElementById('patientEmail').value,
+                patientPhone: document.getElementById('patientPhone').value,
+                provider: document.getElementById('provider').value,
+                providerName: document.getElementById('provider').selectedOptions[0].text,
+                date: document.getElementById('appointmentDate').value,
+                time: document.getElementById('appointmentTime').value,
+                type: document.getElementById('appointmentType').value,
+                symptoms: document.getElementById('symptoms').value,
+                notes: document.getElementById('notes').value,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                patientAddress: userAddress,
+                transactionHash: null,
+                blockNumber: null
+            };
+
+            // Simulate blockchain transaction delay
+            await sleep(2000);
+
+            // Add to blockchain
+            const block = blockchain.addBlock({
+                type: 'APPOINTMENT_CREATED',
+                appointment: formData
+            });
+
+            formData.transactionHash = block.hash;
+            formData.blockNumber = block.index;
+
+            // Save appointment
+            appointments.push(formData);
+            saveAppointments();
+
+            // Update UI
+            updateStats();
+            document.getElementById('blockCount').innerHTML = `<span>Blocks: ${blockchain.chain.length}</span>`;
+
+            showAlert('bookingAlert', 
+                `Appointment created successfully! Transaction Hash: ${block.hash.substring(0, 16)}...`, 
+                'success'
+            );
+
+            document.getElementById('bookingForm').reset();
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Appointment on Blockchain';
+
+            // Auto switch to appointments tab
+            setTimeout(() => switchTab('myAppointments'), 2000);
+        }
+
+        function renderAppointments() {
+            const container = document.getElementById('appointmentsList');
+            
+            if (appointments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>No appointments found. Book your first appointment to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const sorted = [...appointments].sort((a, b) => 
+                new Date(b.createdAt) - new Date(a.createdAt)
+            );
+
+            container.innerHTML = `
+                <div class="appointment-list">
+                    ${sorted.map(apt => `
+                        <div class="appointment-item">
+                            <div class="appointment-header">
+                                <div class="appointment-title">${apt.providerName}</div>
+                                <div class="appointment-status ${apt.status}">${apt.status.toUpperCase()}</div>
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-detail">
+                                    <strong>Patient:</strong>
+                                    <span>${apt.patientName}</span>
+                                </div>
+                                <div class="appointment-detail">
+                                    <strong>Date & Time:</strong>
+                                    <span>${formatDate(apt.date)} at ${apt.time}</span>
+                                </div>
+                                <div class="appointment-detail">
+                                    <strong>Type:</strong>
+                                    <span>${apt.type}</span>
+                                </div>
+                                <div class="appointment-detail">
+                                    <strong>Email:</strong>
+                                    <span>${apt.patientEmail}</span>
+                                </div>
+                                <div class="appointment-detail">
+                                    <strong>Phone:</strong>
+                                    <span>${apt.patientPhone}</span>
+                                </div>
+                                ${apt.symptoms ? `
+                                    <div class="appointment-detail">
+                                        <strong>Symptoms:</strong>
+                                        <span>${apt.symptoms}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="blockchain-info">
+                                <strong>Blockchain Info:</strong><br>
+                                Tx Hash: ${apt.transactionHash ? apt.transactionHash.substring(0, 32) + '...' : 'N/A'}<br>
+                                Block #${apt.blockNumber} | ${new Date(apt.createdAt).toLocaleString()}
+                            </div>
+                            <div class="appointment-actions">
+                                ${apt.status === 'pending' ? `
+                                    <button onclick="confirmAppointment('${apt.id}')" class="secondary">
+                                        ✓ Confirm
+                                    </button>
+                                ` : ''}
+                                ${apt.status !== 'cancelled' && apt.status !== 'completed' ? `
+                                    <button onclick="cancelAppointment('${apt.id}')" class="danger">
+                                        ✕ Cancel
+                                    </button>
+                                ` : ''}
+                                ${apt.status === 'confirmed' ? `
+                                    <button onclick="completeAppointment('${apt.id}')" class="secondary">
+                                        ✓ Mark Complete
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        async function confirmAppointment(id) {
+            const apt = appointments.find(a => a.id === id);
+            if (!apt) return;
+
+            showModal(
+                `Confirm appointment with ${apt.providerName} on ${formatDate(apt.date)} at ${apt.time}?`,
+                async () => {
+                    apt.status = 'confirmed';
+                    
+                    const block = blockchain.addBlock({
+                        type: 'APPOINTMENT_CONFIRMED',
+                        appointmentId: id,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    apt.transactionHash = block.hash;
+                    saveAppointments();
+                    updateStats();
+                    renderAppointments();
+                    closeModal();
+                }
+            );
+        }
+
+        async function cancelAppointment(id) {
+            const apt = appointments.find(a => a.id === id);
+            if (!apt) return;
+
+            showModal(
+                `Are you sure you want to cancel this appointment?`,
+                async () => {
+                    apt.status = 'cancelled';
+                    
+                    const block = blockchain.addBlock({
+                        type: 'APPOINTMENT_CANCELLED',
+                        appointmentId: id,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    apt.transactionHash = block.hash;
+                    saveAppointments();
+                    updateStats();
+                    renderAppointments();
+                    closeModal();
+                }
+            );
+        }
+
+        async function completeAppointment(id) {
+            const apt = appointments.find(a => a.id === id);
+            if (!apt) return;
+
+            showModal(
+                `Mark this appointment as completed?`,
+                async () => {
+                    apt.status = 'completed';
+                    
+                    const block = blockchain.addBlock({
+                        type: 'APPOINTMENT_COMPLETED',
+                        appointmentId: id,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    apt.transactionHash = block.hash;
+                    saveAppointments();
+                    updateStats();
+                    renderAppointments();
+                    closeModal();
+                }
+            );
+        }
+
+        function renderBlockchain() {
+            const container = document.getElementById('blockchainData');
+            
+            if (blockchain.chain.length <= 1) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⛓️</div>
+                        <p>No blocks mined yet. Create an appointment to see blockchain data.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const blocks = [...blockchain.chain].reverse();
+            
+            container.innerHTML = `
+                <div style="margin-bottom: var(--space-16); padding: var(--space-16); background: var(--color-bg-3); border-radius: var(--radius-base); border: 1px solid var(--color-border);">
+                    <strong>Blockchain Status:</strong> ${blockchain.isValid() ? '✓ Valid' : '✗ Invalid'}<br>
+                    <strong>Total Blocks:</strong> ${blockchain.chain.length}<br>
+                    <strong>Difficulty:</strong> ${blockchain.difficulty}
+                </div>
+                <div style="display: grid; gap: var(--space-16);">
+                    ${blocks.map(block => `
+                        <div style="background: var(--color-background); border: 1px solid var(--color-card-border); border-radius: var(--radius-base); padding: var(--space-16);">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-12);">
+                                <strong>Block #${block.index}</strong>
+                                <span style="font-size: 12px; color: var(--color-text-secondary);">
+                                    ${new Date(block.timestamp).toLocaleString()}
+                                </span>
+                            </div>
+                            <div class="blockchain-info">
+                                <strong>Hash:</strong> ${block.hash}<br>
+                                <strong>Previous Hash:</strong> ${block.previousHash}<br>
+                                <strong>Nonce:</strong> ${block.nonce}<br>
+                                <strong>Data Type:</strong> ${block.data.type || 'N/A'}<br>
+                                ${block.data.appointment ? `<strong>Appointment ID:</strong> ${block.data.appointment.id}` : ''}
+                                ${block.data.appointmentId ? `<strong>Appointment ID:</strong> ${block.data.appointmentId}` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function updateStats() {
+            document.getElementById('totalAppointments').textContent = appointments.length;
+            document.getElementById('confirmedAppointments').textContent = 
+                appointments.filter(a => a.status === 'confirmed').length;
+            document.getElementById('pendingAppointments').textContent = 
+                appointments.filter(a => a.status === 'pending').length;
+        }
+
+        function showModal(message, confirmCallback) {
+            document.getElementById('modalBody').innerHTML = `<p>${message}</p>`;
+            document.getElementById('modalConfirm').onclick = confirmCallback;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        function showAlert(containerId, message, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="alert ${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        function generateId() {
+            return 'apt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function saveAppointments() {
+            // In a real app, this would sync with backend/IPFS
+            // For now, we'll keep it in memory
+        }
+
+        function loadAppointments() {
+            // In a real app, this would load from blockchain/IPFS
+            // For demo purposes, appointments array is empty on load
+        }
+
+        // Close modal on outside click
+        document.getElementById('confirmModal').addEventListener('click', (e) => {
+            if (e.target.id === 'confirmModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
+
